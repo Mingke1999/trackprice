@@ -2,8 +2,12 @@ import React from 'react'
 import Image from 'next/image'
 import SearchBar from '@/components/SearchBar'
 import HeroCarousel from '@/components/HeroCarousel'
+import { getAll } from '@/lib/actions'
+import ProductCard from '@/components/ProductCard'
 
-const Page = () => {
+const Page = async () => {
+  const allProducts = await getAll()
+
   return (
     <>
       <section className='px-6 md:px-20 py-24'>
@@ -37,17 +41,11 @@ const Page = () => {
       <section className='trending-section'>
         <h2 className='section-text'>Trending</h2>
         <div className='flex flex-warp gap-x-8 gap-y-16'>
-          {[
-            'Apple iPhone 13',
-            'Garmin GPSMAP 64sx',
-            'NETGEAR Nighthawk AX12',
-            'Canon Vixia HF G21',
-            'Tesla Model 3'
-          ].map((ele)=>(
-            <div>
-              {ele}
-            </div>
-          ))}
+          {
+            allProducts?.map((product)=>(
+              <ProductCard key={product._id} product={product}/>
+            ))
+          }
         </div>
       </section>
     </>
