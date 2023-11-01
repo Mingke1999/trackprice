@@ -13,7 +13,7 @@ export type PriceHistoryItem = {
     image: string;
     title: string;
     currentPrice: number;
-    originalPrice: number;
+    originPrice: number;
     priceHistory: PriceHistoryItem[] | [];
     highestPrice: number;
     lowestPrice: number;
