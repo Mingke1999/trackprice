@@ -49,7 +49,7 @@ export async function scrapeAmazonProduct(url:string){
         const data = {
             url,
             currency:currency||'$',
-            images:imageUrls[0],
+            image:imageUrls[0],
             title,
             currentPrice:Number(currentPrice),
             originPrice:Number(initialPrice),
@@ -62,7 +62,7 @@ export async function scrapeAmazonProduct(url:string){
             description,
             lowestPrice:Number(currentPrice) || Number(initialPrice),
             highestPrice:Number(initialPrice) || Number(currentPrice),
-            average:Number(initialPrice) || Number(currentPrice),
+            averagePrice:Number(initialPrice) || Number(currentPrice),
         }
         return data
     }catch(err:any){

@@ -5,7 +5,6 @@ export function extractPrice(...elements:any){
         const priceText = element.text().trim();
         if(priceText) {
             const cleanPrice = priceText.replace(/[^\d.]/g,'')
-            console.log({cleanPrice})
             let firstPrice
             if(cleanPrice){
                 firstPrice = cleanPrice.match(/\d+\.\d{2}/)?.[0]
