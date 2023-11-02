@@ -1,4 +1,4 @@
-# PriceTracker Based on Web Scraping **JBHIFI** Feature
+# PriceTracker Based on Web Scraping JBHIFI Feature
 
 ## Environment setting and  run
 > - npm install
