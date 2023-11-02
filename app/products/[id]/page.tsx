@@ -7,7 +7,7 @@ import { Product } from '@/types'
 import { formatNumber } from '@/lib/utils'
 import PriceCard from '@/components/PriceCard'
 import { getSimilars } from '@/lib/actions'
-import ProductCard from '@/components/ProductCard'
+import ProductCard from '@/components/productCard'
 import Modal from '@/components/Modal'
 
 type Props= {
