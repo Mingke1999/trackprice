@@ -14,32 +14,31 @@ export async function scrapAndStoreProducts(productUrl:string){
     try{
         dbConn()
         const scrapedProduct = await scrapeJBHIFIProduct(productUrl);
-        console.log(scrapedProduct)
-        // if(!scrapedProduct) return
-        // let product = scrapedProduct
-        // const existingProduct = await Product.findOne({
-        //     url : scrapedProduct.url
-        // })
-        // if(existingProduct){
-        //     const updatedPriceHistory : any = [
-        //         ...existingProduct.priceHistory,
-        //         { price : scrapedProduct.currentPrice }
-        //     ]
-        //     product = {
-        //         ...scrapedProduct,
-        //         priceHistory : updatedPriceHistory,
-        //         lowestPrice : getLowestPrice(updatedPriceHistory),
-        //         highestPrice : getHighestPrice(updatedPriceHistory),
-        //         averagePrice : getAveragePrice(updatedPriceHistory),
-        //     }
-        // }
-        // //inserting new product
-        // const newProduct = await Product.findOneAndUpdate(
-        //     { url : scrapedProduct.url},
-        //     product,
-        //     { upsert: true, new :true},
-        // )
-        // revalidatePath(`/products/${newProduct._id}`)
+        if(!scrapedProduct) return
+        let product = scrapedProduct
+        const existingProduct = await Product.findOne({
+            url : scrapedProduct.url
+        })
+        if(existingProduct){
+            const updatedPriceHistory : any = [
+                ...existingProduct.priceHistory,
+                { price : scrapedProduct.currentPrice }
+            ]
+            product = {
+                ...scrapedProduct,
+                priceHistory : updatedPriceHistory,
+                lowestPrice : getLowestPrice(updatedPriceHistory),
+                highestPrice : getHighestPrice(updatedPriceHistory),
+                averagePrice : getAveragePrice(updatedPriceHistory),
+            }
+        }
+        //inserting new product
+        const newProduct = await Product.findOneAndUpdate(
+            { url : scrapedProduct.url},
+            product,
+            { upsert: true, new :true},
+        )
+        revalidatePath(`/products/${newProduct._id}`)
     }catch(err:any){
         throw new Error(`Failed to create/update product: ${err.message}`)
     }

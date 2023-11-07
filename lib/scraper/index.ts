@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer"
-import { SearchImageUrl } from "../utils";
+import { SearchImageUrl, extractDescription } from "../utils";
 
 export async function scrapeJBHIFIProduct(url:string){
     if(!url){return}
@@ -43,7 +43,7 @@ export async function scrapeJBHIFIProduct(url:string){
             }
             const currency = document.querySelector('.PriceTag_symbolBase__1eb7mu9u')?.textContent
             const stars = document.querySelector('div._6zw1gn8')?.textContent
-            //review count not done yet
+           
             let reviewsCount
             const reviewsCountText = document.querySelector('div._6zw1gn9._6zw1gn8')?.textContent
             if (reviewsCountText) {
@@ -54,9 +54,9 @@ export async function scrapeJBHIFIProduct(url:string){
             }
             const imgSrc = image
             const httpsUrl = "https:" + imgSrc
-            let discountRate 
+            const discountRate = (100*(Number(initialPrice) - Number(currentPrice))/Number(initialPrice)).toFixed(0)
             let outOfStock
-            let description
+            const description = ''
 
             return{
                 url,
