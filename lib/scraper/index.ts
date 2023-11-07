@@ -1,47 +1,27 @@
 import puppeteer from "puppeteer"
-import { DOMParser } from "xmldom"
+import { SearchImageUrl } from "../utils";
 
-export async function scrapeAmazonProduct(url:string){
+export async function scrapeJBHIFIProduct(url:string){
     if(!url){return}
+    //intialise headless puppeteer
     const browser = await puppeteer.launch({ headless: 'new' });
     const page = await browser.newPage();
 
     try{
-        // Navigate to the URL
+        //open url
         await page.goto(url);
         const pageContent = await page.content();
-        // Search for the image source URL within the HTML content
-        const searchURL = '//www.jbhifi.com.au/cdn/shop/products/';
-        let imgSourceFound = false; // To track if the image source is found
-        let image:string = ''
 
-        if (pageContent.includes(searchURL)) {
-            const imgQuery = new DOMParser().parseFromString(pageContent, 'text/html');
-            const imageSrc = imgQuery.getElementsByTagName("img");
-           
-            if (imageSrc) {
-                const imgElements = imgQuery.getElementsByTagName("img");
-            
-                for (let i = 0; i < imgElements.length; i++) {
-                    const imgElement = imgElements[i];
-                    const imgSource = imgElement.getAttribute("src");
-                    if (imgSource && imgSource.includes(searchURL)) {
-                      image = imgSource
-                      imgSourceFound = true;
-                      break; // Stop the loop once a matching image source is found
-                    }
-                  }
-          
-            }
-        }
-        // Wait for the elements to load
+        //wait for specific className element rendered
         await page.waitForSelector('div._12mtftw0._12mtftw8 h1');
         await page.waitForSelector('.PriceTag_actualWrapperDefault__1eb7mu9p');
         await page.waitForSelector('div._6zw1gn9._6zw1gn8')
         await page.waitForSelector('div._6zw1gn8')
         await page.waitForSelector('.PriceTag_footerPriceWrapper__1eb7mu9l')
-        const data = await page.evaluate((url, image)=>{
         
+        //grabing info for each
+        const image = SearchImageUrl(pageContent)
+        const data = await page.evaluate((url, image)=>{
             const title = document.querySelector('div._12mtftw0._12mtftw8 h1')?.textContent;
             let currentPrice, initialPrice
             const currentPriceText = document.querySelector('.PriceTag_actualWrapperDefault__1eb7mu9p')?.textContent
@@ -63,6 +43,7 @@ export async function scrapeAmazonProduct(url:string){
             }
             const currency = document.querySelector('.PriceTag_symbolBase__1eb7mu9u')?.textContent
             const stars = document.querySelector('div._6zw1gn8')?.textContent
+            //review count not done yet
             let reviewsCount
             const reviewsCountText = document.querySelector('div._6zw1gn9._6zw1gn8')?.textContent
             if (reviewsCountText) {
@@ -77,23 +58,23 @@ export async function scrapeAmazonProduct(url:string){
             let outOfStock
             let description
 
-                return{
-                    url,
-                    currency:currency||'$',
-                    title,
-                    currentPrice:Number(currentPrice),
-                    originPrice:Number(initialPrice),
-                    priceHistory:[],
-                    stars,
-                    description,
-                    lowestPrice:Number(currentPrice) || Number(initialPrice),
-                    highestPrice:Number(initialPrice) || Number(currentPrice),
-                    averagePrice:Number(initialPrice) || Number(currentPrice),
-                    reviewsCount:Number(reviewsCount),
-                    category:'category',
-                    image: httpsUrl,
-                    discountRate:Number(discountRate) || 0,
-                    isOutOfStock:outOfStock || false,
+            return{
+                url,
+                currency:currency||'$',
+                title,
+                currentPrice:Number(currentPrice),
+                originPrice:Number(initialPrice),
+                priceHistory:[],
+                stars,
+                description,
+                lowestPrice:Number(currentPrice) || Number(initialPrice),
+                highestPrice:Number(initialPrice) || Number(currentPrice),
+                averagePrice:Number(initialPrice) || Number(currentPrice),
+                reviewsCount:Number(reviewsCount),
+                category:'category',
+                image: httpsUrl,
+                discountRate:Number(discountRate) || 0,
+                isOutOfStock:outOfStock || false,
                 }
             },url, image);
         return data

@@ -1,5 +1,5 @@
 import { PriceHistoryItem, Product} from "@/types";
-
+import { DOMParser } from "xmldom";
 const Notification = {
   WELCOME :'WELCOME',
   CHANGE_OF_STOCK:'CHANGE_OF_STOCK',
@@ -106,3 +106,26 @@ export function extractCurrency(element: any) {
       maximumFractionDigits: 0,
     });
   };
+
+  export const SearchImageUrl = (pageContent:string) =>{
+
+    const searchURL = '//www.jbhifi.com.au/cdn/shop/products/';
+    if (pageContent.includes(searchURL)) {
+      const imgQuery = new DOMParser().parseFromString(pageContent, 'text/html');
+      const imageSrc = imgQuery.getElementsByTagName("img");
+     
+      if (imageSrc) {
+          const imgElements = imgQuery.getElementsByTagName("img");
+      
+          for (let i = 0; i < imgElements.length; i++) {
+              const imgElement = imgElements[i];
+              const imgSource = imgElement.getAttribute("src");
+              if (imgSource && imgSource.includes(searchURL)) {
+                return imgSource
+              }
+            }
+    
+      }
+      return ''
+    }
+  }
