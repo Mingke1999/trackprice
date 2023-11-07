@@ -65,7 +65,7 @@ export async function scrapeJBHIFIProduct(url:string){
                 currentPrice:Number(currentPrice),
                 originPrice:Number(initialPrice),
                 priceHistory:[],
-                stars,
+                stars:Number(stars),
                 description,
                 lowestPrice:Number(currentPrice) || Number(initialPrice),
                 highestPrice:Number(initialPrice) || Number(currentPrice),
