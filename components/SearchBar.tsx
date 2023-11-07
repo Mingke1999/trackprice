@@ -1,6 +1,6 @@
 "use client"
 import { scrapAndStoreProducts } from "@/lib/actions"
-import { scrapeAmazonProduct } from "@/lib/scraper"
+
 import { FormEvent, useState } from "react"
 
 const validateURL = (url:string) =>{
@@ -9,9 +9,9 @@ const validateURL = (url:string) =>{
         const parsedURL = new URL(url)
         const hostname = parsedURL.hostname
         if(
-            hostname.includes('amazon.com')||
-            hostname.includes('amazon.')||
-            hostname.endsWith('amazon')
+            hostname.includes('jbhifi.com')||
+            hostname.includes('jbhifi.')||
+            hostname.endsWith('jbhifi')
         ){
             return true
         }
