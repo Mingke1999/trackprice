@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
   image: { type: String, required: true },
   title: { type: String, required: true },
   currentPrice: { type: Number, required: true },
-  originalPrice: { type: Number, required: true },
+  originPrice: { type: Number, required: true },
   priceHistory: [
     { 
       price: { type: Number, required: true },
@@ -16,15 +16,20 @@ const productSchema = new mongoose.Schema({
   lowestPrice: { type: Number },
   highestPrice: { type: Number },
   averagePrice: { type: Number },
+  stars: { type: Number },
   discountRate: { type: Number },
   description: { type: String },
   category: { type: String },
   reviewsCount: { type: Number },
   isOutOfStock: { type: Boolean, default: false },
-  users: [
-    {email: { type: String, required: true}}
-  ], default: [],
-}, { timestamps: true });
+  users: [{ 
+    email: { type: String, required: true}
+    }],
+    default: [],
+}, 
+{ 
+    timestamps: true 
+    });
 
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 

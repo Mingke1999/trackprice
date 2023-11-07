@@ -1,85 +1,86 @@
-"use server"
+import puppeteer from "puppeteer"
+import { SearchImageUrl, extractDescription } from "../utils";
 
-import axios from 'axios';
-import * as cheerio from 'cheerio';
-import { extractCurrency, extractDescription, extractPrice } from '../utils';
+export async function scrapeJBHIFIProduct(url:string){
+    if(!url){return}
+    //intialise headless puppeteer
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
 
-export async function scrapeAmazonProduct(url: string) {
-  if(!url) return;
+    try{
+        //open url
+        await page.goto(url);
+        const pageContent = await page.content();
 
-  // BrightData proxy configuration
-  const username = String(process.env.BRIGHT_DATA_USERNAME);
-  const password = String(process.env.BRIGHT_DATA_PASSWORD);
-  const port = 22225;
-  const session_id = (1000000 * Math.random()) | 0;
+        //wait for specific className element rendered
+        await page.waitForSelector('div._12mtftw0._12mtftw8 h1');
+        await page.waitForSelector('.PriceTag_actualWrapperDefault__1eb7mu9p');
+        await page.waitForSelector('div._6zw1gn9._6zw1gn8')
+        await page.waitForSelector('div._6zw1gn8')
+        await page.waitForSelector('.PriceTag_footerPriceWrapper__1eb7mu9l')
+        
+        //grabing info for each
+        const image = SearchImageUrl(pageContent)
+        const data = await page.evaluate((url, image)=>{
+            const title = document.querySelector('div._12mtftw0._12mtftw8 h1')?.textContent;
+            let currentPrice, initialPrice
+            const currentPriceText = document.querySelector('.PriceTag_actualWrapperDefault__1eb7mu9p')?.textContent
+            if (currentPriceText) {
+                const matches = currentPriceText.match(/\d+/);
+                if (matches) {
+                    currentPrice = matches[0];
+                }
+            }
+            const priceSpanElement = document.querySelector('.PriceTag_priceHeader__1eb7mu91a');
+            if (priceSpanElement) {
+                // Within the parent span, select the span containing the price
+                const priceValueElement = priceSpanElement.querySelector('span:not(.PriceTag_symbolHeader__1eb7mu91b)');
+            
+                if (priceValueElement) {
+                    initialPrice = priceValueElement.textContent;
+                    
+                }
+            }
+            const currency = document.querySelector('.PriceTag_symbolBase__1eb7mu9u')?.textContent
+            const stars = document.querySelector('div._6zw1gn8')?.textContent
+           
+            let reviewsCount
+            const reviewsCountText = document.querySelector('div._6zw1gn9._6zw1gn8')?.textContent
+            if (reviewsCountText) {
+                const matches = reviewsCountText.match(/\((\d+)\)/);
+                if (matches) {
+                    reviewsCount = matches[1];
+                }
+            }
+            const imgSrc = image
+            const httpsUrl = "https:" + imgSrc
+            const discountRate = (100*(Number(initialPrice) - Number(currentPrice))/Number(initialPrice)).toFixed(0)
+            let outOfStock
+            const description = ''
 
-  const options = {
-    auth: {
-      username: `${username}-session-${session_id}`,
-      password,
-    },
-    host: 'brd.superproxy.io',
-    port,
-    rejectUnauthorized: false,
-  }
-
-  try {
-    // Fetch the product page
-    const response = await axios.get(url, options);
-    const $ = cheerio.load(response.data);
-
-    // Extract the product title
-    const title = $('#productTitle').text().trim();
-    const currentPrice = extractPrice(
-      $('.priceToPay span.a-price-whole'),
-      $('.a.size.base.a-color-price'),
-      $('.a-button-selected .a-color-base'),
-    );
-
-    const originalPrice = extractPrice(
-      $('#priceblock_ourprice'),
-      $('.a-price.a-text-price span.a-offscreen'),
-      $('#listPrice'),
-      $('#priceblock_dealprice'),
-      $('.a-size-base.a-color-price')
-    );
-
-    const outOfStock = $('#availability span').text().trim().toLowerCase() === 'currently unavailable';
-
-    const images = 
-      $('#imgBlkFront').attr('data-a-dynamic-image') || 
-      $('#landingImage').attr('data-a-dynamic-image') ||
-      '{}'
-
-    const imageUrls = Object.keys(JSON.parse(images));
-
-    const currency = extractCurrency($('.a-price-symbol'))
-    const discountRate = $('.savingsPercentage').text().replace(/[-%]/g, "");
-
-    const description = extractDescription($)
-
-    // Construct data object with scraped information
-    const data = {
-      url,
-      currency: currency || '$',
-      image: imageUrls[0],
-      title,
-      currentPrice: Number(currentPrice) || Number(originalPrice),
-      originalPrice: Number(originalPrice) || Number(currentPrice),
-      priceHistory: [],
-      discountRate: Number(discountRate),
-      category: 'category',
-      reviewsCount:100,
-      stars: 4.5,
-      isOutOfStock: outOfStock,
-      description,
-      lowestPrice: Number(currentPrice) || Number(originalPrice),
-      highestPrice: Number(originalPrice) || Number(currentPrice),
-      averagePrice: Number(currentPrice) || Number(originalPrice),
+            return{
+                url,
+                currency:currency||'$',
+                title,
+                currentPrice:Number(currentPrice),
+                originPrice:Number(initialPrice),
+                priceHistory:[],
+                stars,
+                description,
+                lowestPrice:Number(currentPrice) || Number(initialPrice),
+                highestPrice:Number(initialPrice) || Number(currentPrice),
+                averagePrice:Number(initialPrice) || Number(currentPrice),
+                reviewsCount:Number(reviewsCount),
+                category:'category',
+                image: httpsUrl,
+                discountRate:Number(discountRate) || 0,
+                isOutOfStock:outOfStock || false,
+                }
+            },url, image);
+        return data
+    }catch(err:any){
+        throw new Error(`Failed to scrape product: ${err.message}`)
+    }finally {
+        await browser.close();
     }
-
-    return data;
-  } catch (error: any) {
-    console.log(error);
-  }
 }
