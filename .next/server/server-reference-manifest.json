@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "node": {
     "9c50f04148c59f9c25441ecdd53e5fec41790b1d": {
       "workers": {
@@ -73,4 +74,9 @@
   },
   "edge": {},
   "encryptionKey": "egoL0u0p3YjeMFXkrIhtKCPbHyLOnHQzM9lWsaCBjrU="
+=======
+  "node": {},
+  "edge": {},
+  "encryptionKey": "Orh/XKl5omdaTp/LdXP+MzPDYnX09YT6OBCHL+6dE18="
+>>>>>>> 14388d5ffd0cdc156796ea2af44c34d5901b1278
 }

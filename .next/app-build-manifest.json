@@ -6,9 +6,10 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/products/[id]/page": [
+    "/not-found": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+<<<<<<< HEAD
       "static/chunks/app/products/[id]/page.js"
     ],
     "/page": [
@@ -16,6 +17,9 @@
       "static/chunks/main-app.js",
       "static/css/app/page.css",
       "static/chunks/app/page.js"
+=======
+      "static/chunks/app/not-found.js"
+>>>>>>> 14388d5ffd0cdc156796ea2af44c34d5901b1278
     ]
   }
 }

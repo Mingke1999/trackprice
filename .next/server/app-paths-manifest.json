@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 {
   "/products/[id]/page": "app/products/[id]/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
   "/page": "app/page.js"
 }
+=======
+{}
+>>>>>>> 14388d5ffd0cdc156796ea2af44c34d5901b1278
