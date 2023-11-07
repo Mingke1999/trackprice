@@ -4,7 +4,7 @@ import React from 'react'
 import Image from 'next/image'
 
 interface Props {
-    product : Product
+    product:Product
 }
 
 const ProductCard = ({product}:Props) => {

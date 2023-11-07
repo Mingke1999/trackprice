@@ -1,71 +1,105 @@
-import axios from "axios"
-import * as cheerio from 'cheerio'
-import { extractPrice,extractCurrency, extractDescription } from "../utils"
+import puppeteer from "puppeteer"
+import { DOMParser } from "xmldom"
 
 export async function scrapeAmazonProduct(url:string){
     if(!url){return}
-    
-    const username = String(process.env.BRIGHT_DATA_USERNAME)
-    const password = String(process.env.BRIGHT_DATA_PASSWORD)
-    const port = 22225
-    const session_id = (1000000*Math.random()) | 0
-    const options = {
-        auth:{
-            username:`${username}-session-${session_id}`,
-            password,
-        },
-        host:'brd.superproxy.io',
-        port,
-        rejectUnauthorized:false
-    }
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
 
     try{
-        const res = await axios.get(url,options)
-        const $ = cheerio.load(res.data)
-        const title = $('#productTitle').text().trim()
+        // Navigate to the URL
+        await page.goto(url);
+        const pageContent = await page.content();
+        // Search for the image source URL within the HTML content
+        const searchURL = '//www.jbhifi.com.au/cdn/shop/products/';
+        let imgSourceFound = false; // To track if the image source is found
+        let image:string = ''
 
-        const currentPriceElement = 
-        $(`.priceToPay span.a-price-whole,
-            .a.size.base.a-color-price,
-            .a-button-selected .a-color-base,
-            .a-price.aok-align-center span.a-offscreen`);
-        const currentPrice = extractPrice(currentPriceElement)
-
-        const initialPriceElement = 
-        $(`#priceblock_ourprice,
-            #listPrice,
-            #priceblock_dealprice,
-            .a-price.a-text-price span.a-offscreen,
-            .a-price.a-text-price.a-size-base span.a-offscreen`);
-        const initialPrice = extractPrice(initialPriceElement);
-
-        const outOfStock = $('#availablity span').text().trim().toLowerCase() === 'currently unavailable'
-        const images = $('#imgBlkFront').attr('data-a-dynamic-image') ||
-            $('#landingImage').attr('data-a-dynamic-image') || '{}'
-        const imageUrls = Object.keys(JSON.parse(images))
-        const currency = extractCurrency($('.a-price-symbol'))
-        const discountRate = $('#savingsPercentage:first').text().replace(/[^0-9]/g,'');
-        const description =  extractDescription($)
-        const data = {
-            url,
-            currency:currency||'$',
-            image:imageUrls[0],
-            title,
-            currentPrice:Number(currentPrice),
-            originPrice:Number(initialPrice),
-            priceHistory:[],
-            discountRate:Number(discountRate),
-            category:'category',
-            reviewsCount:100,
-            stars:4.5,
-            isOutOfStock:outOfStock,
-            description,
-            lowestPrice:Number(currentPrice) || Number(initialPrice),
-            highestPrice:Number(initialPrice) || Number(currentPrice),
-            averagePrice:Number(initialPrice) || Number(currentPrice),
+        if (pageContent.includes(searchURL)) {
+            const imgQuery = new DOMParser().parseFromString(pageContent, 'text/html');
+            const imageSrc = imgQuery.getElementsByTagName("img");
+           
+            if (imageSrc) {
+                const imgElements = imgQuery.getElementsByTagName("img");
+            
+                for (let i = 0; i < imgElements.length; i++) {
+                    const imgElement = imgElements[i];
+                    const imgSource = imgElement.getAttribute("src");
+                    if (imgSource && imgSource.includes(searchURL)) {
+                      image = imgSource
+                      imgSourceFound = true;
+                      break; // Stop the loop once a matching image source is found
+                    }
+                  }
+          
+            }
         }
+        // Wait for the elements to load
+        await page.waitForSelector('div._12mtftw0._12mtftw8 h1');
+        await page.waitForSelector('.PriceTag_actualWrapperDefault__1eb7mu9p');
+        await page.waitForSelector('div._6zw1gn9._6zw1gn8')
+        await page.waitForSelector('div._6zw1gn8')
+        await page.waitForSelector('.PriceTag_footerPriceWrapper__1eb7mu9l')
+        const data = await page.evaluate((url, image)=>{
+        
+            const title = document.querySelector('div._12mtftw0._12mtftw8 h1')?.textContent;
+            let currentPrice, initialPrice
+            const currentPriceText = document.querySelector('.PriceTag_actualWrapperDefault__1eb7mu9p')?.textContent
+            if (currentPriceText) {
+                const matches = currentPriceText.match(/\d+/);
+                if (matches) {
+                    currentPrice = matches[0];
+                }
+            }
+            const priceSpanElement = document.querySelector('.PriceTag_priceHeader__1eb7mu91a');
+            if (priceSpanElement) {
+                // Within the parent span, select the span containing the price
+                const priceValueElement = priceSpanElement.querySelector('span:not(.PriceTag_symbolHeader__1eb7mu91b)');
+            
+                if (priceValueElement) {
+                    initialPrice = priceValueElement.textContent;
+                    
+                }
+            }
+            const currency = document.querySelector('.PriceTag_symbolBase__1eb7mu9u')?.textContent
+            const stars = document.querySelector('div._6zw1gn8')?.textContent
+            let reviewsCount
+            const reviewsCountText = document.querySelector('div._6zw1gn9._6zw1gn8')?.textContent
+            if (reviewsCountText) {
+                const matches = reviewsCountText.match(/\((\d+)\)/);
+                if (matches) {
+                    reviewsCount = matches[1];
+                }
+            }
+            const imgSrc = image
+            const httpsUrl = "https:" + imgSrc
+            let discountRate 
+            let outOfStock
+            let description
+
+                return{
+                    url,
+                    currency:currency||'$',
+                    title,
+                    currentPrice:Number(currentPrice),
+                    originPrice:Number(initialPrice),
+                    priceHistory:[],
+                    stars,
+                    description,
+                    lowestPrice:Number(currentPrice) || Number(initialPrice),
+                    highestPrice:Number(initialPrice) || Number(currentPrice),
+                    averagePrice:Number(initialPrice) || Number(currentPrice),
+                    reviewsCount:Number(reviewsCount),
+                    category:'category',
+                    image: httpsUrl,
+                    discountRate:Number(discountRate) || 0,
+                    isOutOfStock:outOfStock || false,
+                }
+            },url, image);
         return data
     }catch(err:any){
         throw new Error(`Failed to scrape product: ${err.message}`)
+    }finally {
+        await browser.close();
     }
 }

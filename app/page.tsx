@@ -1,10 +1,9 @@
 import React from 'react'
 import Image from 'next/image'
-import SearchBar from '@/components/SearchBar'
+import SearchBar from '@/components/Searchbar'
 import HeroCarousel from '@/components/HeroCarousel'
 import { getAll } from '@/lib/actions'
-import ProductCard from '@/components/productCard';
-
+import ProductCard from '@/components/ProductCard'
 
 const Page = async () => {
   const allProducts = await getAll()
@@ -52,4 +51,5 @@ const Page = async () => {
     </>
   )
 }
+
 export default Page
