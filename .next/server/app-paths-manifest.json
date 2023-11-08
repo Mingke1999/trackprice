@@ -1,9 +1,7 @@
-<<<<<<< HEAD
 {
-  "/products/[id]/page": "app/products/[id]/page.js",
+  "/_not-found": "app/_not-found.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/products/[id]/page": "app/products/[id]/page.js",
+  "/api/cron/route": "app/api/cron/route.js"
 }
-=======
-{}
->>>>>>> 14388d5ffd0cdc156796ea2af44c34d5901b1278

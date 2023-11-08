@@ -4,7 +4,7 @@ import Product from "../models/product.model";
 import { dbConn } from "../mongoose";
 import { scrapeJBHIFIProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
-import { User } from "@/types";
+import { User } from "../../types";
 import { generateEmail, sendEmail } from "../nodemailer";
 
 export async function scrapAndStoreProducts(productUrl:string){
