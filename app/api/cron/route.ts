@@ -1,9 +1,9 @@
 import { getLowestPrice,getHighestPrice, getAveragePrice,getEmailNotifType } from "@/lib/utils"
-import Product from "@/lib/models/product.model"
 import { dbConn } from "@/lib/mongoose"
-import { scrapeAmazonProduct } from "@/lib/scraper"
+import { scrapeJBHIFIProduct } from "@/lib/scraper"
 import { generateEmail, sendEmail } from "@/lib/nodemailer"
 import { NextResponse } from "next/server"
+import Product from "@/lib/models/product.model"
 
 export const maxDuration = 3
 export const dynamic = 'force-dynamic'
@@ -18,7 +18,7 @@ export async function GET(){
         const updatedProducts = await Promise.all(
             //call multiple async action at same time
             products.map(async (currentProduct)=>{
-                const scrapedProduct = await scrapeAmazonProduct(currentProduct.url) 
+                const scrapedProduct = await scrapeJBHIFIProduct(currentProduct.url) 
                 if(!scrapedProduct){throw new Error("No product found")}
                 const updatedPriceHistory = [
                     ...currentProduct.priceHistory,
@@ -35,8 +35,12 @@ export async function GET(){
                     { url : product.url},
                     product,
                 )
+                const mappedScrapedProduct = {
+                    ...scrapedProduct,
+                    title: scrapedProduct.title || "", // Convert null or undefined to an empty string
+                  };
                 //check each product's status and send email accordingly
-                const emailNotifType = getEmailNotifType(scrapedProduct,currentProduct);
+                const emailNotifType = getEmailNotifType(mappedScrapedProduct,currentProduct);
   
                 if (emailNotifType && updatedProduct.users.length > 0) {
                     const productInfo = {

@@ -2,9 +2,9 @@
 import { revalidatePath } from "next/cache";
 import Product from "../models/product.model";
 import { dbConn } from "../mongoose";
-import { scrapeAmazonProduct } from "../scraper";
+import { scrapeJBHIFIProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
-import { User } from "@/types";
+import { User } from "../../types";
 import { generateEmail, sendEmail } from "../nodemailer";
 
 export async function scrapAndStoreProducts(productUrl:string){
@@ -13,7 +13,7 @@ export async function scrapAndStoreProducts(productUrl:string){
     }
     try{
         dbConn()
-        const scrapedProduct = await scrapeAmazonProduct(productUrl);
+        const scrapedProduct = await scrapeJBHIFIProduct(productUrl);
         if(!scrapedProduct) return
         let product = scrapedProduct
         const existingProduct = await Product.findOne({
