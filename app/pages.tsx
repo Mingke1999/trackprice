@@ -5,7 +5,7 @@ import HeroCarousel from '../components/HeroCarousel'
 import { getAll } from '../lib/actions'
 import ProductCard from '../components/ProductCard'
 
-const Page = async () => {
+const Pages = async () => {
   const allProducts = await getAll()
 
   return (
@@ -52,4 +52,4 @@ const Page = async () => {
   )
 }
 
-export default Page
+export default Pages
