@@ -1,4 +1,4 @@
-import { PriceHistoryItem, Product} from "@/types";
+import { PriceHistoryItem, Product} from "../types";
 import { DOMParser } from "xmldom";
 const Notification = {
   WELCOME :'WELCOME',

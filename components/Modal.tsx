@@ -1,8 +1,9 @@
 "use client"
+import React from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { FormEvent, Fragment, useState } from 'react'
 import Image from 'next/image'
-import { addUserEmailToProduct } from '@/lib/actions'
+import { addUserEmailToProduct } from '../lib/actions'
 
 // const Modal = () => {
 //     let [isOpen, setIsOpen] = useState(true)
