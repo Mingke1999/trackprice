@@ -1,6 +1,6 @@
 import React from "react"
 import HeroCarousel from "../components/HeroCarousel"
-import SearchBar from "../components/SearchBar"
+import Searchbar from "../components/Searchbar"
 import Image from "next/image"
 import { getAll } from "../lib/actions"
 import ProductCard from "../components/ProductCard"
@@ -32,7 +32,7 @@ const Home = async () => {
               Powerful, self-serve product and growth analytics to help you convert, engage, and retain more.
             </p>
 
-            <SearchBar />
+            <Searchbar />
           </div>
 
           <HeroCarousel />
