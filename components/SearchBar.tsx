@@ -1,6 +1,6 @@
 "use client"
-import { scrapAndStoreProducts } from "@/lib/actions"
-
+import React from 'react';
+import { scrapAndStoreProducts } from "../lib/actions"
 import { FormEvent, useState } from "react"
 
 const validateURL = (url:string) =>{
