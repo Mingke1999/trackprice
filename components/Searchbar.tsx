@@ -22,7 +22,7 @@ const validateURL = (url:string) =>{
     }
     return false
 }
-const SearchBar = () => {
+const Searchbar = () => {
   const [searchPrompt, setSearchPrompt] = useState("")
   const [isloading, setIsLoading] = useState(false)
 
@@ -64,4 +64,4 @@ const SearchBar = () => {
   )
 }
 
-export default SearchBar
+export default Searchbar
