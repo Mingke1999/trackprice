@@ -1,14 +1,14 @@
-import { getProductById } from '@/lib/actions'
+import { getProductById } from '../../../lib/actions'
 import { redirect } from 'next/navigation'
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Product } from '@/types'
-import { formatNumber } from '@/lib/utils'
-import PriceCard from '@/components/PriceCard'
-import { getSimilars } from '@/lib/actions'
-import ProductCard from '@/components/ProductCard'
-import Modal from '@/components/Modal'
+import { Product } from '../../../types'
+import { formatNumber } from '../../../lib/utils'
+import PriceCard from '../../../components/PriceCard'
+import { getSimilars } from '../../../lib/actions'
+import ProductCard from '../../../components/ProductCard'
+import Modal from '../../../components/Modal'
 
 type Props= {
     params : {id : string}

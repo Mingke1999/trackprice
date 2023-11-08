@@ -1,5 +1,5 @@
 "use server"
-import { EmailContent, EmailProductInfo, NotificationType } from '@/types'
+import { EmailContent, EmailProductInfo, NotificationType } from '../../types'
 import nodemailer from 'nodemailer'
 
 const Notification = {

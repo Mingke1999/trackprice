@@ -1,9 +1,9 @@
-import { getLowestPrice,getHighestPrice, getAveragePrice,getEmailNotifType } from "@/lib/utils"
-import { dbConn } from "@/lib/mongoose"
-import { scrapeJBHIFIProduct } from "@/lib/scraper"
-import { generateEmail, sendEmail } from "@/lib/nodemailer"
+import { getLowestPrice,getHighestPrice, getAveragePrice,getEmailNotifType } from "../../../lib/utils"
+import { dbConn } from "../../../lib/mongoose"
+import { scrapeJBHIFIProduct } from "../../../lib/scraper"
+import { generateEmail, sendEmail } from "../../../lib/nodemailer"
 import { NextResponse } from "next/server"
-import Product from "@/lib/models/product.model"
+import Product from "../../../lib/models/product.model"
 
 export const maxDuration = 3
 export const dynamic = 'force-dynamic'
