@@ -1,4 +1,7 @@
-const {join} = require('path');
+import { fileURLToPath } from 'url';
+const {join, dirname} = require('path');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 /**
  * @type {import("puppeteer").Configuration}
