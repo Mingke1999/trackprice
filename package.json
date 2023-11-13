@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "node ./postinstall.js"
+    "postinstall": "echo Skip postinstall"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
