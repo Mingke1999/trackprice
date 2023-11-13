@@ -1,6 +1,6 @@
 import React from "react"
 import HeroCarousel from "../components/HeroCarousel"
-import SearchBar from "../components/SearchBar"
+import SearchBar from "../components/Searchbar"
 import Image from "next/image"
 import { getAll } from "../lib/actions"
 import ProductCard from "../components/ProductCard"
