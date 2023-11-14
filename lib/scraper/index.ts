@@ -4,7 +4,9 @@ import { SearchImageUrl, extractDescription } from "../utils";
 export async function scrapeJBHIFIProduct(url:string){
     if(!url){return}
     //intialise headless puppeteer
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.connect({
+        browserWSEndpoint: 'wss://chrome.browserless.io?token=12d02b7f-59f0-4471-9fd6-bfc8746b5662', // Replace with your Browserless API key
+    });
     const page = await browser.newPage();
 
     try{
