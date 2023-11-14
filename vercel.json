@@ -1,0 +1,8 @@
+{
+  "builds": [
+    { "src": "your-start-file.js", "use": "@vercel/node" }
+  ],
+  "hooks": {
+    "postinstall": "node_modules/puppeteer/install.js"
+  }
+}
